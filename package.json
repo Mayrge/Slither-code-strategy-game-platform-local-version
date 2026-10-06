@@ -1,0 +1,12 @@
+{
+  "name": "snake-arena",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Local AI strategy programming arena: simultaneous multiplayer snake",
+  "scripts": {
+    "start": "node server.mjs",
+    "test": "node --test tests/*.test.mjs"
+  },
+  "engines": { "node": ">=20" }
+}

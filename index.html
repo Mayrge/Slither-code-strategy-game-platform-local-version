@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101713">
+  <title>Snake Arena · 贪吃蛇策略竞技台</title>
+  <link rel="stylesheet" href="/src/styles.css">
+  <script type="module" src="/src/app.js"></script>
+</head>
+<body>
+  <aside class="rail">
+    <a class="brand-mark" href="/" aria-label="Snake Arena 首页"><svg viewBox="0 0 32 32" fill="none" aria-hidden="true"><path d="M24 8H12a5 5 0 0 0 0 10h8a4 4 0 0 1 0 8H8" stroke="currentColor" stroke-width="5" stroke-linecap="round"/><circle cx="23" cy="7" r="1" fill="#101713"/></svg></a>
+    <div class="rail-line"></div>
+    <nav aria-label="页面导航">
+      <button class="nav-button active" data-page="ranking" title="永久排行榜" aria-label="永久排行榜" aria-current="page"><span>♛</span><small>榜单</small></button>
+      <button class="nav-button" data-page="arena" title="对战现场" aria-label="对战现场"><span>◉</span><small>对战</small></button>
+      <button class="nav-button" data-page="lab" title="策略实验室" aria-label="策略实验室"><span class="code-icon">{ }</span><small>策略</small></button>
+      <button class="nav-button" data-page="tournament" title="多局测试" aria-label="多局测试"><span>▥</span><small>赛程</small></button>
+      <button class="nav-button" data-page="guide" title="规则与参赛" aria-label="规则与参赛"><span>▤</span><small>规则</small></button>
+    </nav>
+    <div class="rail-bottom"><span class="status-dot"></span><small>LOCAL</small></div>
+  </aside>
+
+  <main>
+    <header class="topbar"><div class="wordmark">SNAKE<span>ARENA</span><b>策略竞技台</b></div><div class="local-badge"><span class="status-dot"></span>本地竞技 · V1.0</div></header>
+
+    <section id="page-ranking" class="page active" aria-label="永久排行榜">
+      <div class="page-heading"><div><div class="eyebrow">WRITE CODE. EARN YOUR PLACE.</div><h1>群蛇论剑<span class="accent">。</span></h1><p>三级联赛，长久争锋。每一次排名，都由赛场上的表现决定。</p></div><button class="button primary" id="ranking-to-tournament">生成排位赛程 ↗</button></div>
+      <div class="ranking-summary"><span id="ranking-count">正在读取注册选手…</span><span id="ranking-revision">尚未定榜</span></div>
+      <div id="ranking-podium" class="ranking-podium" aria-label="最高级联赛前三名"></div>
+      <div id="league-list" class="league-grid"></div>
+      <div class="ranking-bottom"><article class="panel"><div class="panel-heading"><h2>待定位与候补</h2><button class="text-button" id="ranking-register">注册新选手 ↗</button></div><p class="panel-caption">新选手从定位赛争取席位。三级名额满员后，第31名进入候补，可再次挑战。</p><div id="ranking-pending" class="pending-list"></div></article>
+      <article class="panel"><div class="panel-heading"><h2>排名变动记录</h2><span class="badge">永久记录</span></div><p class="panel-caption">只比较同场名次积分。同分保留原先次序；删除原赛程和回放不会撤销已导入排名。</p><div id="ranking-history" class="ranking-history"></div><button id="ranking-history-more" class="text-button history-more" hidden>查看更多记录</button></article></div>
+      <article class="panel ranking-rules"><strong>如何上榜</strong><p>先注册并锁定名称与代码，再生成排位赛。完整赛程经核验后手动导入。定位赛领先全级可向上挑战；联赛之间通过交界挑战争夺名额。每级最多10人，共30个席位。尚未定榜时，先选择2～10名选手建立初始榜。</p><p>排位统一为30×30、500回合、60个基础食物。每局按分数换算0～100名次积分，完整轮换出生位置；最近一场平均积分仅作表现参考，不跨级直接比较。</p></article>
+    </section>
+
+    <section id="page-arena" class="page" aria-label="对战现场">
+      <div class="page-heading"><div><div class="eyebrow">THE STRATEGY PLAYGROUND</div><h1>让策略，正面交锋<span class="accent">。</span></h1><p>让 AI 写代码，让蛇群在同一张棋盘上回答。</p></div><button class="button subtle" id="open-lab">编辑参赛策略 <span>↗</span></button></div>
+      <div class="rule-strip"><div><span class="tiny-label">地图</span><strong>30 <i>×</i> 30</strong></div><div><span class="tiny-label">赛制</span><strong>500 <em>回合</em></strong></div><div><span class="tiny-label">碰撞规则</span><strong>自碰免死</strong></div><div><span class="tiny-label">排名依据</span><strong>长度分数</strong></div><div class="rule-note"><span>↗</span> 成长、封路、争夺每一格。</div></div>
+
+      <div class="arena-grid">
+        <div class="arena-left">
+          <article class="panel board-panel">
+            <div class="panel-heading"><div class="heading-label"><span class="status-dot" id="match-dot"></span><h2>对战现场</h2><span class="badge" id="match-status">准备就绪</span></div><div class="board-heading-right"><span id="seed-display">SNAKE-2026</span><button class="icon-button" id="fullscreen-board" title="放大棋盘" aria-label="放大棋盘">⛶</button></div></div>
+            <div class="board-wrap" id="board-wrap"><canvas id="board" width="900" height="900" aria-label="30乘30贪吃蛇对战棋盘"></canvas><div class="board-overlay" id="board-overlay"><span class="overlay-kicker">READY WHEN YOU ARE</span><h3>10 个策略，等待交锋</h3><p>选择你的选手，开启第一场比赛。</p><button class="button primary" id="overlay-start">开始比赛 <span>▶</span></button></div><div class="board-corner"><span class="status-dot"></span><span id="board-corner-text">同步回合 · 完整信息</span></div></div>
+            <div class="board-footer"><span>● <b id="alive-count">10</b> 条存活</span><span class="food-key">◆ <b id="food-count">60</b> 个食物</span><span><b id="occupied-count">5.6</b>% 占用</span><span class="footer-right" id="turn-display">回合 <b>000</b> / 500</span></div>
+          </article>
+          <article class="panel playback-panel">
+            <div class="playback-actions"><div class="playback-buttons"><button class="button primary" id="start-match">开始比赛 <span>▶</span></button><button class="button secondary" id="step-match" title="推进一个回合">单步</button><button class="icon-button" id="reset-match" title="重新准备本局" aria-label="重新准备本局">↻</button></div><label class="speed-control">播放速度<select id="speed" aria-label="播放速度"><option value="4">4 回合 / 秒</option><option value="12" selected>12 回合 / 秒</option><option value="30">30 回合 / 秒</option><option value="60">60 回合 / 秒</option><option value="0">最快</option></select></label></div>
+            <div class="timeline-row"><span id="timeline-position">000</span><input type="range" id="timeline" min="0" max="0" value="0" disabled aria-label="回放进度"><span id="timeline-end">000</span></div>
+            <div class="playback-bottom"><span id="playback-hint">比赛过程自动录制；暂停后可拖动查看历史回合。</span><button class="text-button" id="back-to-tournament" hidden>返回赛程 ↗</button><button class="text-button" id="export-replay" disabled>导出回放 ↗</button><button class="text-button" id="import-replay">导入回放</button></div>
+          </article>
+          <article class="panel events-panel"><div class="panel-heading"><h2>比赛动态</h2><span class="muted" id="event-count">等待开赛</span></div><div id="events" class="event-feed"><div class="empty-inline">每一次淘汰、食物掉落和名次变化，都留在这里。</div></div></article>
+        </div>
+
+        <aside class="arena-right">
+          <article class="panel leaderboard-panel"><div class="panel-heading"><h2 id="ranking-title">实时排名</h2><span class="tiny-label">SCORE</span></div><p class="panel-caption">存活与死亡玩家统一按分数排名</p><div id="leaderboard"></div><div id="winner-summary" class="winner-summary" hidden></div><div class="leaderboard-note">死亡时冻结分数 · 同分并列</div></article>
+          <article class="panel settings-panel"><div class="panel-heading"><h2>本局设置</h2><span class="badge" id="player-count">10 / 10</span></div><label class="field-label" for="seed">地图种子</label><div class="input-with-button"><input id="seed" maxlength="64" value="SNAKE-2026" spellcheck="false"><button class="icon-button" id="random-seed" title="换一个种子" aria-label="换一个种子">⤨</button></div><div class="settings-two"><label class="field-label">基础食物<input type="number" id="food-target" min="1" max="180" value="60"></label><div><span class="field-label">死亡掉落</span><strong class="settings-value">30% <small>向下取整</small></strong></div></div><div class="settings-description">低于基础数量时补充，死亡掉落可暂时超出。</div><button class="button secondary full" id="manage-players">管理参赛选手 <span>↗</span></button></article>
+          <article class="mini-callout"><span class="callout-icon">{ }</span><div><strong>让你的 AI 入场</strong><p>提供规则与接口，生成策略文件，导入后即可参赛。</p><button class="text-button" id="copy-prompt">一键复制参赛提示词</button></div></article>
+        </aside>
+      </div>
+    </section>
+
+    <section id="page-lab" class="page" aria-label="策略实验室">
+      <div class="page-heading"><div><div class="eyebrow">BUILD YOUR CONTENDER</div><h1>策略实验室<span class="accent">。</span></h1><p>为每一条蛇装入不同的思考方式。</p></div><button class="button primary" id="lab-to-arena">回到对战现场 ↗</button></div>
+      <div class="lab-grid"><article class="panel roster-panel"><div class="panel-heading"><h2>参赛选手</h2><span class="badge" id="roster-count">10 名</span></div><p class="panel-caption">可添加自定义选手，每场勾选2～10名。草稿可编辑名称、颜色和代码；注册后名称与代码锁定。</p><button class="button primary full" id="add-player">＋ 添加参赛选手</button><div id="roster"></div><button class="button secondary full" id="restore-all">恢复全部示例策略</button></article>
+        <article class="panel editor-panel"><div class="panel-heading"><div class="heading-label"><span id="editor-color" class="player-dot"></span><h2 id="editor-title">青柠 · 寻路</h2><span class="badge">JavaScript</span></div><span id="editor-save-state" class="muted">已保存</span></div><div class="registration-bar"><div><strong id="registration-status">未注册草稿</strong><p id="registration-hint">保存名称与代码后注册，即可参加排位。注册后名称与代码不可修改。</p></div><div><button class="button secondary" id="clone-player">复制为新版本</button><button class="button primary" id="register-player">注册选手</button></div></div><div class="editor-fields"><label class="field-label">选手名称<input id="player-name" maxlength="24"></label><label class="field-label">策略标签<input id="player-role" maxlength="24"></label><div class="field-label player-color-field"><span>蛇身颜色</span><div class="color-inputs"><input type="color" id="player-color-picker" aria-label="选择蛇身颜色" value="#66ccff"><input id="player-color-hex" aria-label="蛇身颜色色值" maxlength="7" value="#66ccff" spellcheck="false" placeholder="#66ccff"></div></div></div><div class="editor-toolbar"><span>strategy.js <i>·</i> export default function decide(state)</span><div><button class="text-button" id="lab-copy-prompt">一键复制参赛提示词</button><button class="text-button" id="upload-strategy">导入文件</button><button class="text-button" id="download-strategy">下载代码 ↗</button></div></div><textarea id="code-editor" aria-label="策略代码" spellcheck="false" autocapitalize="off" autocomplete="off"></textarea><div class="editor-footer"><span>每步50ms执行预算 · 独立运行 · 记忆在每局重置</span><div><button class="button secondary" id="restore-player">恢复示例</button><button class="button primary" id="save-player">保存策略</button></div></div><div id="strategy-test-result" class="test-result" hidden></div><div class="editor-help"><div><strong>返回一个方向</strong><code>{ direction: "up" }</code><span>up / right / down / left</span></div><div><strong>完整局面可见</strong><span>地图、食物、所有蛇的位置与分数</span><button class="text-button" id="test-strategy">试运行当前策略 →</button></div></div></article></div>
+    </section>
+
+    <section id="page-tournament" class="page" aria-label="多局测试">
+      <div class="page-heading"><div><div class="eyebrow">ONE MATCH IS NEVER THE WHOLE STORY</div><h1>让策略经得起多局<span class="accent">。</span></h1><p>不同种子，轮换出生位置。用一组比赛观察策略的稳定性。</p></div></div>
+      <article class="panel ranked-generator"><div class="panel-heading"><div class="heading-label"><h2>生成排位赛程</h2><span class="badge">注册选手专属</span></div><button class="text-button" id="ranked-select-active">选择当前参赛选手</button></div><p class="panel-caption">勾选注册选手生成同级排位；单选一名待定位选手，自动安排该级全部对手。满10人的定位赛会轮换对手，每局最多10条蛇。</p><div id="ranked-contestants" class="ranked-contestants"></div><div class="ranked-generator-actions"><label class="field-label">期望局数<select id="ranked-rounds"><option value="50">50局</option><option value="100" selected>100局</option><option value="500">500局</option></select></label><button class="button primary" id="generate-ranked">一键生成排位赛程</button><button class="button secondary" id="ranked-first">华山全级</button><button class="button secondary" id="ranked-second">凌云全级</button><button class="button secondary" id="ranked-third">潜龙全级</button><button class="button secondary" id="ranked-boundary-one">华山／凌云挑战</button><button class="button secondary" id="ranked-boundary-two">凌云／潜龙挑战</button></div><p class="panel-caption" id="ranked-generator-hint">局数自动补齐完整位置轮换，最低50局。生成后点击“开始赛程”，完成后导入排行榜。</p></article>
+      <article class="panel tournament-library"><div class="panel-heading"><div class="heading-label"><h2>我的赛程</h2><span class="badge" id="tournament-library-count">0 个赛程</span></div><button class="button primary" id="new-tournament">＋ 新增赛程</button></div><p class="panel-caption">所有赛程分别保存，重新打开仍可查看。删除赛程会同时删除其全部回放。</p><div id="tournament-library-list" class="tournament-library-list"></div></article>
+      <article class="panel tournament-controls">
+        <div class="tournament-name-field"><label class="field-label" for="tournament-name">赛程名称<input id="tournament-name" maxlength="48" placeholder="先新增赛程，再填写名称"></label><button class="button secondary" id="save-tournament">保存赛程</button></div>
+        <div><label class="field-label">测试局数<select id="tournament-rounds"><option value="4">4 局 · 快速测试</option><option value="10">10 局</option><option value="20">20 局</option><option value="50" selected>50 局</option><option value="100">100 局</option><option value="500">500 局</option><option value="custom">自定义局数</option></select></label></div>
+        <div id="tournament-custom-field" hidden><label class="field-label">自定义局数<input type="number" id="tournament-custom-rounds" min="1" max="1000" value="50" step="1"></label></div>
+        <div class="tournament-seed-field"><label class="field-label" for="tournament-seed">赛程种子（相同种子可复现安排）</label><div class="input-with-button"><input id="tournament-seed" value="ARENA-CUP" maxlength="40"><button class="icon-button" id="random-tournament-seed" title="随机生成新赛程种子" aria-label="随机生成新赛程种子">⤨</button></div></div>
+        <button class="button primary" id="run-tournament">开始赛程 ▶</button><button class="button secondary" id="stop-tournament" disabled>停止</button><button class="button secondary" id="export-tournament" disabled>导出统计 ↗</button>
+        <p id="tournament-edit-hint" class="tournament-plan"></p><div class="tournament-roster-snapshot"><p id="tournament-contestants">新增赛程时会保存当前勾选选手的策略代码。</p><button class="text-button" id="use-tournament-roster">使用当前参赛选手</button></div><p id="tournament-plan" class="tournament-plan"></p><p class="tournament-fairness">每组使用相同地图种子，各选手轮换全部出生位置；每组随机打乱排列与轮换顺序，并更换地图种子。未满一组时位置次数最多相差1。每局完成后自动保存回放，测试进行中也可回看已完成的局。</p>
+      </article>
+      <article class="panel tournament-results"><div class="panel-heading"><h2>积分榜</h2><span class="badge" id="tournament-status">尚未开始</span></div><div class="tournament-progress"><div id="tournament-progress-bar"></div></div><p class="panel-caption">每局按分数排名，名次换算为0～100积分；同分玩家平分所占名次的积分。总榜按平均积分排列。</p><div class="table-scroll"><table><thead><tr><th>名次</th><th>选手</th><th>平均积分</th><th>平均长度</th><th>第一名次数</th><th>存活率</th><th>已完成</th></tr></thead><tbody id="tournament-table"><tr><td colspan="7" class="table-empty">选择参赛策略后，开始一组公平的轮换测试。</td></tr></tbody></table></div><div class="rank-import"><div><strong id="rank-import-status">选择赛程后核验排位资格</strong><p id="rank-import-hint"></p></div><button class="button primary" id="import-ranking" disabled>一键导入排行榜</button></div><div class="tournament-replays-heading"><h2>单局记录与回放</h2><p id="tournament-session-info">每局完成后自动保存回放，可从“我的赛程”切换历史记录。</p></div><div class="tournament-filters"><label class="field-label">筛选局号、种子或获胜者<input id="tournament-search" placeholder="例如：25 或获胜者名称" maxlength="80"></label><label class="field-label">按获胜者筛选<select id="tournament-winner"><option value="">全部获胜者</option></select></label></div><div id="tournament-games" class="tournament-games"><p class="tournament-empty">每局完成后会自动出现在这里。</p></div><div class="tournament-pagination"><span id="tournament-list-info">尚无比赛记录</span><div><button class="button secondary" id="tournament-prev" disabled>上一页</button><button class="button secondary" id="tournament-next" disabled>下一页</button></div></div></article>
+    </section>
+
+    <section id="page-guide" class="page" aria-label="规则与参赛">
+      <div class="page-heading"><div><div class="eyebrow">SAME RULES. DIFFERENT IDEAS.</div><h1>规则清楚，策略自由<span class="accent">。</span></h1><p>把这份规则交给AI，生成程序，然后让代码真正上场。</p></div><button class="button primary" id="guide-copy-prompt">一键复制参赛提示词</button></div>
+      <article class="panel agent-kit-panel"><div class="agent-kit-intro"><span class="agent-kit-icon">{ }</span><div><div class="eyebrow">A PRIVATE PRACTICE ARENA FOR YOUR AGENT</div><h2>把训练场交给 AI</h2><p>下载资料，让 Agent 在空白环境里写代码、测试、查看每个回合，再自行迭代。无需你观看比赛。</p></div><button class="button primary" id="download-agent-kit">一键下载 AI Agent 资料 <span>↓</span></button></div><div class="agent-kit-contents"><span>AI 迭代提示词</span><span>30×30 空白地图</span><span>单步与批量测试工具</span><span>每回合 JSON 记录</span><span>10份系统策略与说明</span></div><p class="agent-kit-note">ZIP 解压后交给能读写文件、运行命令的 Agent，先读 PROMPT.md 即可开始。测试独立运行，不计入排行榜；需要 Node.js 20+，无需安装依赖。</p><div class="agent-kit-result" id="agent-kit-result" hidden><div><strong>资料已保存到竞技台 exports 文件夹</strong><span id="agent-kit-filename"></span></div><a class="button secondary" id="agent-kit-link" download>下载资料包 ↗</a></div></article>
+      <article class="panel prompt-panel">
+        <div class="panel-heading"><div class="heading-label"><h2>给参赛 AI 的初始提示词</h2><span class="badge">直接复制使用</span></div><button class="button primary" id="prompt-copy">一键复制全文</button></div>
+        <p class="panel-caption">目标是拿到更高分、争取更高排名。复制给 AI，让它输出完整 strategy.js，再到策略实验室导入。</p>
+        <textarea id="contestant-prompt" readonly aria-label="参赛 AI 初始提示词全文" spellcheck="false"></textarea>
+        <p class="prompt-footnote">包含竞技目标、游戏规则、输入接口和代码输出要求；基础食物数量随本局设置更新。</p>
+      </article>
+      <div class="guide-grid"><article class="panel guide-card"><span class="guide-number">01</span><h2>比赛与计分</h2><ul><li>30×30地图，2～10名玩家；初始长度5格，每回合必须走1格。</li><li>所有策略读取同一回合的完整局面，同时提交行动。</li><li>允许头部穿过自己的身体，禁止180度反向移动。</li><li>一个食物占一格，吃到后长度和分数各增加1。</li><li>所有玩家按分数排名，死亡玩家的分数冻结。同分并列。</li><li>500回合或全部死亡时结束。剩一条蛇时继续比赛。</li></ul></article>
+      <article class="panel guide-card"><span class="guide-number">02</span><h2>碰撞与食物</h2><ul><li>撞边界或其他蛇身体会死亡。多个蛇头进入同一格、交换头部位置时全部死亡。</li><li>合法且不吃食物的移动会先腾出尾格，即使该蛇随后在本回合碰撞死亡；同格还有身体段则仍占用。</li><li>本回合死亡的身体仍参与碰撞判定，全部判定后统一清除。</li><li>死亡掉落 floor(长度×30%) 个食物，优先在原身体格生成，其余放入附近空格。</li><li>食物不生成在存活蛇身体或已有食物上；空间不足时只生成容得下的数量。</li><li>基础食物数量默认20＋4×玩家数，可调整；低于下限才补充，掉落超出时不会删除食物。</li></ul></article>
+      <article class="panel guide-card"><span class="guide-number">03</span><h2>策略如何参赛</h2><ol><li>复制参赛提示词，让AI输出独立JavaScript模块。</li><li>在策略实验室导入.js文件或粘贴代码，保存并勾选参赛。</li><li>试运行检查接口，再进行单局或多局测试。参加排位请先注册；修改注册代码请复制为新版本。</li><li>每局创建独立Worker，模块变量可记忆局内信息，每局重置。</li><li>代码加载失败、异常、输出非法、反向或超时，都会淘汰该玩家并冻结分数。</li></ol><a class="text-button" href="/strategies/starter.js" download="starter.js">下载入门示例 ↗</a></article>
+      <article class="panel guide-card api-card"><span class="guide-number">04</span><h2>策略接口</h2><pre>export default function decide(state) {
+  // state.you：自己的玩家ID
+  // state.turn：已完成回合，首回合为0
+  // state.width / height：地图尺寸
+  // state.food：[[x,y], ...]
+  // state.snakes：所有玩家
+  // snake.body：头 → 尾的坐标数组
+  // snake.alive / score / direction
+  return { direction: "down" };
+}</pre><p>坐标从左上角[0,0]开始。支持up、right、down、left，也可直接返回方向字符串。</p></article></div>
+      <article class="panel guide-footnote"><strong>运行说明</strong><p>本地浏览器执行JavaScript策略，无需账号或API密钥。每次调用在Worker内部测量50ms预算，另有250ms无响应保护。实际耗时受设备和浏览器影响，多局测试请保持页面在前台。Worker隔离界面并限制网络连接，但不构成面向不可信代码的安全沙箱。回放记录实际局面，导入后只播放记录，不运行参赛代码。</p><div><a class="text-button" href="/RULES.md" target="_blank" rel="noopener">完整规则与接口 ↗</a><a class="text-button" href="/README.md" target="_blank" rel="noopener">使用说明 ↗</a></div></article>
+    </section>
+    <aside class="panel export-result" id="export-result" hidden><div><strong>文件已保存到项目的 exports 文件夹</strong><span id="export-file-name"></span></div><a class="button secondary" id="export-file-link" download>下载刚导出的文件 ↗</a><button class="icon-button" id="close-export" aria-label="关闭导出提示">×</button></aside>
+    <footer class="site-footer"><span>SNAKE ARENA <i>/</i> 把想法写成策略，把策略放进赛场。</span><span>30 × 30 · 500 TURNS · UP TO 10 PLAYERS</span></footer>
+  </main>
+  <input type="file" id="strategy-file" accept=".js,.mjs,text/javascript" hidden>
+  <input type="file" id="replay-file" accept=".json,application/json" hidden>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+</body>
+</html>

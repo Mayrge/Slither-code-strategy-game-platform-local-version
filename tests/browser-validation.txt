@@ -1,0 +1,23 @@
+PASS · 10个真实Worker成功加载模块
+进度 · 100/500回合 · 9条存活
+进度 · 200/500回合 · 6条存活
+进度 · 300/500回合 · 2条存活
+进度 · 400/500回合 · 2条存活
+进度 · 500/500回合 · 2条存活
+PASS · 完整500回合，长度、分数和食物约束成立
+PASS · 示例策略没有代码错误、非法输出或超时
+PASS · 501帧回放导出/导入校验，大小1355KB
+最终长度 · 靛蓝 · 侦察:181 / 月白 · 采集:165 / 薄荷 · 游击:85 / 紫罗兰 · 漫游:75 / 青柠 · 寻路:67 / 珊瑚 · 追猎:61 / 桃粉 · 突进:47 / 琥珀 · 拾荒:40 / 冰川 · 守望:32 / 日落 · 巡航:26
+PASS · 执行异常正确淘汰，冻结分数，未阻塞对手
+PASS · 死循环正确淘汰，冻结分数，未阻塞对手
+PASS · 无效输出正确淘汰，冻结分数，未阻塞对手
+PASS · 语法错误正确淘汰，冻结分数，未阻塞对手
+ALL PASSED
+
+2026-10-05 Permanent rankings:
+36 Node tests passed.
+Main arena: 10 system contestants auto-registered; actual 50-game fair seed/position schedule completed, all 50 replays verified, bootstrap imported; top three highest-league medals shown.
+Separate test origin: two custom contestants registered, names/code read-only, cloning to new version, 50-game ranked cup import and reload restored; ordinary 50-game cup successfully imported; 51-game newcomer placement completed and entered highest league at #1.
+Independent temporary ranking DB: 12 checks passed, including immutable registration, unique names, editable colors, transactional concurrent imports, duplicate protection, physical tournament/replay deletion with unchanged rankings, and reopening storage.
+
+2026-10-05 AI agent kit: 42 Node tests passed. Rules page download button generated a 39414-byte ZIP, download link and copy prompt button visible, no browser errors. Native Windows Expand-Archive extracted standalone kit; extracted CLI completed 2 full 500-turn games, 1002 JSONL turn records and browser-compatible replays. Inspect returned game 1 / turn 10 with player observation.
